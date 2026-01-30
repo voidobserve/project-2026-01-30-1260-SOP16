@@ -1,0 +1,136 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              01/30/2026 16:24:12 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Release\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCDI
+                    -R(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\main.lst) OBJECT(.\Release
+                    -\Objects\main.obj)
+
+line level    source
+
+   1          /**
+   2           ******************************************************************************
+   3           * @file    main.c
+   4           * @author  HUGE-IC Application Team
+   5           * @version V1.0.0
+   6           * @date    02-09-2022
+   7           * @brief   Main program body
+   8           ******************************************************************************
+   9           * @attention
+  10           *
+  11           * <h2><center>&copy; COPYRIGHT 2021 HUGE-IC</center></h2>
+  12           *
+  13           * 版权说明后续补上
+  14           *
+  15           ******************************************************************************
+  16           */
+  17          
+  18          /* Includes ------------------------------------------------------------------*/
+  19          #include "my_config.h"
+  20          #include "include.h"
+  21          #include <math.h>
+  22          #include <stdio.h>
+  23          #include "power_on.h"
+  24          #include "timer3.h"
+  25          
+  26          #if USE_MY_DEBUG // 打印串口配置
+  27          
+  28          #define UART0_BAUD 115200
+  29          #define USER_UART0_BAUD ((SYSCLK - UART0_BAUD) / (UART0_BAUD))
+  30          // 重写puchar()函数
+  31          char putchar(char c)
+  32          {
+  33   1          while (!(UART0_STA & UART_TX_DONE(0x01)))
+  34   1              ;
+  35   1          UART0_DATA = c;
+  36   1          return c;
+  37   1      }
+  38          
+  39          void my_debug_config(void)
+  40          {
+  41   1          // 作为发送引脚
+  42   1          P0_MD0 &= (GPIO_P00_MODE_SEL(0x3));
+  43   1          P0_MD0 |= GPIO_P00_MODE_SEL(0x1);            // 配置为输出模式
+  44   1          FOUT_S00 |= GPIO_FOUT_UART0_TX;              // 配置为UART0_TX
+  45   1          UART0_BAUD1 = (USER_UART0_BAUD >> 8) & 0xFF; // 配置波特率高八位
+  46   1          UART0_BAUD0 = USER_UART0_BAUD & 0xFF;        // 配置波特率低八位
+  47   1          UART0_CON0 = UART_STOP_BIT(0x0) |
+  48   1                       UART_EN(0x1); // 8bit数据，1bit停止位
+  49   1      }
+  50          #endif // USE_MY_DEBUG // 打印串口配置
+  51          
+  52          void main(void)
+  53          {
+C51 COMPILER V9.60.7.0   MAIN                                                              01/30/2026 16:24:12 PAGE 2   
+
+  54   1          // 看门狗默认打开, 复位时间2s
+  55   1          WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗 (如需配置看门狗请查看“WDT\WDT_Reset”示
+             -例)
+  56   1      
+  57   1          system_init();
+  58   1      
+  59   1          // 关闭HCK和HDA的调试功能
+  60   1          WDT_KEY = 0x55;  // 解除写保护
+  61   1          IO_MAP &= ~0x01; // 清除这个寄存器的值，实现关闭HCK和HDA引脚的调试功能（解除�
+             -��射）
+  62   1          WDT_KEY = 0xBB;  // 写一个无效的数据，触发写保护
+  63   1      
+  64   1      #if USE_MY_DEBUG // 打印串口配置
+  65   1          // 初始化打印
+  66   1          my_debug_config();
+  67   1          printf("sys reset\n");
+  68   1      #endif // 打印串口配置
+  69   1      
+  70   1      #if 1
+  71   1          adc_pin_config(); // 配置使用到adc的引脚
+  72   1          adc_config();
+  73   1      
+  74   1          tmr0_config();    // 配置定时器
+  75   1          pwm_init();       // 配置pwm输出的引脚
+  76   1          tmr1_config();
+  77   1      
+  78   1          timer2_config();
+  79   1          timer3_config(); // 要等adc完成初始化，再调用timer3的初始化
+  80   1      
+  81   1          P1_MD1 &= ~GPIO_P14_MODE_SEL(0x03);
+  82   1          P1_MD1 |= GPIO_P14_MODE_SEL(0x01);
+  83   1          FOUT_S14 = GPIO_FOUT_AF_FUNC; // AF功能输出
+  84   1          P14 = 0;
+  85   1      #endif
+  86   1      
+  87   1          power_on_handle();
+  88   1      
+  89   1          while (1)
+  90   1          {
+  91   2              update_max_pwm_duty_coefficient();
+  92   2              temperature_scan(); // 检测热敏电阻一端的电压值
+  93   2              set_duty();         // 设定到要调节到的脉宽
+  94   2      
+  95   2              // 如果 expect_adjust_pwm_channel_x_duty 有变化，可以在这里修改 adjust_pwm_channel_x_
+             -duty
+  96   2              adjust_pwm_channel_0_duty = get_pwm_channel_x_adjust_duty(expect_adjust_pwm_channel_0_duty);
+  97   2          }
+  98   1      }
+  99          
+ 100          /**
+ 101           * @}
+ 102           */
+ 103          
+ 104          /*************************** (C) COPYRIGHT 2022 HUGE-IC ***** END OF FILE *****/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    137    ----
+   CONSTANT SIZE    =     11    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              01/30/2026 16:24:12 PAGE 3   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

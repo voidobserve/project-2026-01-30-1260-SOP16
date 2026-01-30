@@ -1,0 +1,98 @@
+C51 COMPILER V9.60.7.0   TIME0                                                             01/30/2026 16:24:12 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIME0
+OBJECT MODULE PLACED IN .\Release\Objects\time0.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\time0.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCD
+                    -IR(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\time0.lst) OBJECT(.\Relea
+                    -se\Objects\time0.obj)
+
+line level    source
+
+   1          #include "time0.h"
+   2          #include "power_on.h"
+   3          
+   4          /**
+   5           * @brief ÅäÖÃ¶¨Ê±Æ÷TMR0£¬¶¨Ê±Æ÷Ä¬ÈÏ¹Ø±Õ
+   6           */
+   7          void tmr0_config(void)
+   8          {
+   9   1          __EnableIRQ(TMR0_IRQn); // Ê¹ÄÜtimer0ÖÐ¶Ï
+  10   1          IE_EA = 1;              // Ê¹ÄÜ×ÜÖÐ¶Ï
+  11   1      
+  12   1      #define PEROID_VAL (SYSCLK / 128 / 1000 - 1) // ÖÜÆÚÖµ=ÏµÍ³Ê±ÖÓ/·ÖÆµ/ÆµÂÊ - 1
+  13   1          // ÉèÖÃtimer0µÄ¼ÆÊý¹¦ÄÜ£¬ÅäÖÃÒ»¸öÆµÂÊÎª1kHzµÄÖÐ¶Ï
+  14   1          TMR_ALLCON = TMR0_CNT_CLR(0x1);                        // Çå³ý¼ÆÊýÖµ
+  15   1          TMR0_PRH = TMR_PERIOD_VAL_H((PEROID_VAL >> 8) & 0xFF); // ÖÜÆÚÖµ
+  16   1          TMR0_PRL = TMR_PERIOD_VAL_L((PEROID_VAL >> 0) & 0xFF);
+  17   1          TMR0_CONH = TMR_PRD_PND(0x1) | TMR_PRD_IRQ_EN(0x1);                          // ¼ÆÊýµÈÓÚÖÜÆÚÊ±ÔÊÐí·¢Éú
+             -ÖÐ¶Ï
+  18   1          TMR0_CONL = TMR_SOURCE_SEL(0x7) | TMR_PRESCALE_SEL(0x7) | TMR_MODE_SEL(0x1); // Ñ¡ÔñÏµÍ³Ê±ÖÓ£¬128·ÖÆµ£
+             -¬¼ÆÊýÄ£Ê½
+  19   1      }
+  20          
+  21          // /**
+  22          //  * @brief ¿ªÆô¶¨Ê±Æ÷TMR0£¬¿ªÊ¼¼ÆÊ±
+  23          //  */
+  24          // void tmr0_enable(void)
+  25          // {
+  26          //     // ÖØÐÂ¸øTMR0ÅäÖÃÊ±ÖÓ
+  27          //     TMR0_CONL &= ~(TMR_SOURCE_SEL(0x07)); // Çå³ý¶¨Ê±Æ÷µÄÊ±ÖÓÔ´ÅäÖÃ¼Ä´æÆ÷
+  28          //     TMR0_CONL |= TMR_SOURCE_SEL(0x06);    // ÅäÖÃ¶¨Ê±Æ÷µÄÊ±ÖÓÔ´£¬Ê¹ÓÃÏµÍ³Ê±ÖÓ£¨Ô¼21MHz£©
+  29          
+  30          //     __EnableIRQ(TMR0_IRQn); // Ê¹ÄÜÖÐ¶Ï
+  31          //     IE_EA = 1;              // ´ò¿ª×ÜÖÐ¶Ï
+  32          // }
+  33          
+  34          // /**
+  35          //  * @brief ¹Ø±Õ¶¨Ê±Æ÷0£¬Çå¿Õ¼ÆÊýÖµ
+  36          //  */
+  37          // void tmr0_disable(void)
+  38          // {
+  39          //     // ²»¸ø¶¨Ê±Æ÷Ìá¹©Ê±ÖÓ£¬ÈÃËüÍ£Ö¹¼ÆÊý
+  40          //     TMR0_CONL &= ~(TMR_SOURCE_SEL(0x07)); // Çå³ý¶¨Ê±Æ÷µÄÊ±ÖÓÔ´ÅäÖÃ¼Ä´æÆ÷
+  41          //     TMR0_CONL |= TMR_SOURCE_SEL(0x05);    // ÅäÖÃ¶¨Ê±Æ÷µÄÊ±ÖÓÔ´£¬²»ÓÃÈÎºÎÊ±ÖÓ
+  42          
+  43          //     // Çå³ý¶¨Ê±Æ÷µÄ¼ÆÊýÖµ
+  44          //     TMR0_CNTL = 0;
+  45          //     TMR0_CNTH = 0;
+  46          
+  47          //     __DisableIRQ(TMR0_IRQn); // ¹Ø±ÕÖÐ¶Ï£¨²»Ê¹ÄÜÖÐ¶Ï£©
+  48          // }
+  49          
+  50          // extern void fun(void);
+  51          // ¶¨Ê±Æ÷TMR0ÖÐ¶Ï·þÎñº¯Êý
+C51 COMPILER V9.60.7.0   TIME0                                                             01/30/2026 16:24:12 PAGE 2   
+
+  52          void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
+  53          {
+  54   1          // ½øÈëÖÐ¶ÏÉèÖÃIP£¬²»¿ÉÉ¾³ý
+  55   1          __IRQnIPnPush(TMR0_IRQn);
+  56   1      
+  57   1          // ---------------- ÓÃ»§º¯Êý´¦Àí -------------------
+  58   1      
+  59   1          // ÖÜÆÚÖÐ¶Ï
+  60   1          if (TMR0_CONH & TMR_PRD_PND(0x1))
+  61   1          {
+  62   2              TMR0_CONH |= TMR_PRD_PND(0x1); // Çå³ýpending
+  63   2      
+  64   2              flag_time_comes_during_power_on = 1; // ¿ª»ú»ºÆô¶¯ÆÚ¼ä£¬¿ØÖÆÃ¿´Îµ÷½ÚPWMÕ¼¿Õ±ÈµÄÊ±¼ä
+  65   2          }
+  66   1      
+  67   1          // ÍË³öÖÐ¶ÏÉèÖÃIP£¬²»¿ÉÉ¾³ý
+  68   1          __IRQnIPnPop(TMR0_IRQn);
+  69   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     55    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

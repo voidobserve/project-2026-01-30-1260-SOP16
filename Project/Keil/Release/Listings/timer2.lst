@@ -1,0 +1,138 @@
+C51 COMPILER V9.60.7.0   TIMER2                                                            01/30/2026 16:24:13 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIMER2
+OBJECT MODULE PLACED IN .\Release\Objects\timer2.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\timer2.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INC
+                    -DIR(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\timer2.lst) OBJECT(.\Rel
+                    -ease\Objects\timer2.obj)
+
+line level    source
+
+   1          #include "timer2.h"
+   2          #include "power_on.h"
+   3          #define TIMER2_PEROID_VAL (SYSCLK / 128 / 10000 - 1) // 周期值=系统时钟/分频/频率 - 1
+   4          
+   5          static volatile u16 pwm_duty_add_cnt; // 用于控制pwm增加的时间计数
+   6          static volatile u16 pwm_duty_sub_cnt; // 用于控制pwm递减的时间计数
+   7          
+   8          volatile bit flag_is_pwm_add_time_comes = 0; // 标志位，pwm占空比递增时间到来
+   9          volatile bit flag_is_pwm_sub_time_comes = 0; // 标志位，pwm占空比递减时间到来
+  10          
+  11          static volatile u16 pwm_duty_change_cnt = 0; // 用于控制pwm变化的时间计数（用在旋钮调节�
+             -��PWM占空比中）
+  12          
+  13          void timer2_config(void)
+  14          {
+  15   1          __EnableIRQ(TMR2_IRQn); // 使能timer2中断
+  16   1          IE_EA = 1;              // 使能总中断
+  17   1      
+  18   1          // 设置timer2的计数功能，配置一个频率为1kHz的中断
+  19   1          TMR_ALLCON = TMR2_CNT_CLR(0x1);                               // 清除计数值
+  20   1          TMR2_PRH = TMR_PERIOD_VAL_H((TIMER2_PEROID_VAL >> 8) & 0xFF); // 周期值
+  21   1          TMR2_PRL = TMR_PERIOD_VAL_L((TIMER2_PEROID_VAL >> 0) & 0xFF);
+  22   1          TMR2_CONH = TMR_PRD_PND(0x1) | TMR_PRD_IRQ_EN(0x1);                          // 计数等于周期时�
+             -��许发生中断
+  23   1          TMR2_CONL = TMR_SOURCE_SEL(0x7) | TMR_PRESCALE_SEL(0x7) | TMR_MODE_SEL(0x1); // 选择系统时钟，1
+             -28分频，计数模式
+  24   1      }
+  25          
+  26          // 定时器 中断服务函数
+  27          void TIMR2_IRQHandler(void) interrupt TMR2_IRQn
+  28          {
+  29   1          // 进入中断设置IP，不可删除
+  30   1          __IRQnIPnPush(TMR2_IRQn);
+  31   1      
+  32   1          // ---------------- 用户函数处理 -------------------
+  33   1      
+  34   1          // 周期中断
+  35   1          if (TMR2_CONH & TMR_PRD_PND(0x1)) // 约100us触发一次中断
+  36   1          {
+  37   2              TMR2_CONH |= TMR_PRD_PND(0x1); // 清除pending
+  38   2      
+  39   2              pwm_duty_add_cnt++;
+  40   2              pwm_duty_sub_cnt++;
+  41   2              pwm_duty_change_cnt++;
+  42   2      
+  43   2              if (pwm_duty_sub_cnt >= 13) // 1300us，1.3ms
+  44   2              // if (pwm_duty_sub_cnt >= 50)
+  45   2              {
+  46   3                  pwm_duty_sub_cnt = 0;
+  47   3                  flag_is_pwm_sub_time_comes = 1;
+  48   3              }
+  49   2      
+  50   2              // if (pwm_duty_add_cnt >= 133) // 13300us, 13.3ms
+C51 COMPILER V9.60.7.0   TIMER2                                                            01/30/2026 16:24:13 PAGE 2   
+
+  51   2              if (pwm_duty_add_cnt >= 13) // 1300us，1.3ms
+  52   2              {
+  53   3                  pwm_duty_add_cnt = 0;
+  54   3                  flag_is_pwm_add_time_comes = 1;
+  55   3              }
+  56   2      
+  57   2      #if 1                                  // 调节PWM占空比
+  58   2                                             // if (pwm_duty_change_cnt >= 10) // 1000us,1ms
+  59   2                                             // if (pwm_duty_change_cnt >= 1) // 100us（用遥控器调节，�
+             -�50%以上调节pwm占空比的时候，灯光会有抖动）
+  60   2                                             // if (pwm_duty_change_cnt >= 5) // 500us
+  61   2                                             // if (pwm_duty_change_cnt >= 10) // x * 100us （用遥控器调�
+             -�到50%以下pwm占空比的时候，灯光会有抖动）
+  62   2              if (pwm_duty_change_cnt >= 20) // x * 100us （ 用遥控器调节时，灯光不会有抖动，�
+             -�机最高功率为870W--加上风扇）
+  63   2              // if (pwm_duty_change_cnt >= 30) // x * 100us （用遥控器调节时，灯光不会有抖动，
+             -但是调节时间过长，感觉不跟手）
+  64   2              {
+  65   3      
+  66   3                  pwm_duty_change_cnt = 0;
+  67   3      
+  68   3                  if (0 == flag_is_in_power_on) // 不处于开机缓启动，才使能PWM占空比调节
+  69   3                  {
+  70   4                      // =================================================================
+  71   4                      // pwm_channel_0                                               //
+  72   4                      // =================================================================
+  73   4                      if (adjust_pwm_channel_0_duty > cur_pwm_channel_0_duty)
+  74   4                      {
+  75   5                          cur_pwm_channel_0_duty++;
+  76   5                      }
+  77   4                      else if (adjust_pwm_channel_0_duty < cur_pwm_channel_0_duty)
+  78   4                      {
+  79   5                          cur_pwm_channel_0_duty--;
+  80   5                      }
+  81   4      
+  82   4                      set_pwm_channel_0_duty(cur_pwm_channel_0_duty);
+  83   4      
+  84   4                      if (cur_pwm_channel_0_duty <= 0)
+  85   4                      {
+  86   5                          // 小于某个值，直接输出0%占空比，关闭PWM输出，引脚配置为输出
+             -模式
+  87   5                          pwm_channel_0_disable();
+  88   5                      }
+  89   4                      else // 如果大于0
+  90   4                      {
+  91   5                          pwm_channel_0_enable();
+  92   5                      }
+  93   4      
+  94   4                  } // if (0 == flag_is_in_power_on) // 不处于开机缓启动，才使能PWM占空比调节
+  95   3              }
+  96   2      #endif // 调节PWM占空比
+  97   2          }
+  98   1      
+  99   1          // 退出中断设置IP，不可删除
+ 100   1          __IRQnIPnPop(TMR2_IRQn);
+ 101   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    314    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      6    ----
+C51 COMPILER V9.60.7.0   TIMER2                                                            01/30/2026 16:24:13 PAGE 3   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
