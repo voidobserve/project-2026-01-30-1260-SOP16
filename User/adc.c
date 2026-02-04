@@ -1,14 +1,14 @@
 #include "adc.h"
 #include "my_config.h"
-#include "engine.h" 
+#include "engine.h"
 
 // 存放温度状态的变量
 volatile u8 temp_status = TEMP_NORMAL;
 
 // USER_TO_DO 需要改成初始值是正常状态下的值：
-volatile u16 adc_val_from_engine = 4095; // 存放 从发动机一侧 采集到的ad值
-volatile u16 adc_val_from_knob;          // 存放 从旋钮一侧 采集到的ad值
-volatile u16 adc_val_from_temp;          // 存放 从热敏电阻一侧 采集到的ad值
+volatile u16 adc_val_from_engine = U16_MAX_VAL; // 存放 从发动机一侧 采集到的ad值
+volatile u16 adc_val_from_knob = U16_MAX_VAL;   // 存放 从旋钮一侧 采集到的ad值
+volatile u16 adc_val_from_temp = U16_MAX_VAL;   // 存放 从热敏电阻一侧 采集到的ad值
 
 volatile u8 cur_adc_status = ADC_STATUS_NONE; // 状态机，表示当前adc的状态
 
@@ -102,10 +102,12 @@ void temperature_scan(void)
     }
 
     voltage = get_voltage_from_pin(); // 采集热敏电阻上的电压
-
-#if USE_MY_DEBUG
-    // printf("PIN-8 voltage: %lu mV\n", voltage);
-#endif // USE_MY_DEBUG
+    if (voltage >= (u32)U16_MAX_VAL * 12 / 10)
+    {
+        // 如果还没有采集到数据，adc_val_from_temp == U16_MAX_VAL，直接返回
+        // printf("adc tmp not ready\n");
+        return;
+    }
 
     // 如果之前的温度为正常，检测是否超过75摄氏度（±5摄氏度）
     if (TEMP_NORMAL == temp_status)
@@ -187,7 +189,9 @@ void set_duty(void)
         if (flag_is_time_to_check_engine)
         {
             flag_is_time_to_check_engine = 0;
+            P14 = 1;
             according_pin9_to_adjust_pwm();
+            P14 = 0;
         }
     }
     else if (TEMP_75 == temp_status)

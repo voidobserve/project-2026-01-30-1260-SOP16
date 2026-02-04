@@ -9,6 +9,9 @@
 #include "timer2.h"
 #include "knob_dimming.h" // 旋钮调光头文件
 
+#define U32_MAX_VAL ((u32)0xFFFFFFFF)
+#define U16_MAX_VAL ((u16)0xFFFF)
+
 // 是否使用打印调试
 // 使用 P00 作为 串口打印输出 （实际用到的芯片的第4脚）
 #define USE_MY_DEBUG 1

@@ -7,8 +7,8 @@ volatile u16 limited_pwm_duty_due_to_temp = PWM_DUTY_100_PERCENT;
 volatile u16 limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_100_PERCENT;
 
 volatile bit flag_is_time_to_limit_pwm = 0; // 标志位，是否到了限制占空比的定时时间（由定时器置位，置位之后不清零）
-  
-volatile u16 cur_pwm_channel_0_duty = 0;                          // 当前设置的、 pwm_channle_0 的占空比（只有遥控器指定要修改它的值或是定时器缓慢调节，才会被修改）
+
+volatile u16 cur_pwm_channel_0_duty = 0;                              // 当前设置的、 pwm_channle_0 的占空比（只有遥控器指定要修改它的值或是定时器缓慢调节，才会被修改）
 volatile u16 expect_adjust_pwm_channel_0_duty = PWM_DUTY_100_PERCENT; // 存放期望调节到的 pwm_channle_0 占空比
 volatile u16 adjust_pwm_channel_0_duty = PWM_DUTY_100_PERCENT;        // pwm_channle_0 要调整到的占空比
 

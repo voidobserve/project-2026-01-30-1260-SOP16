@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   TIME0                                                             01/30/2026 16:24:12 PAGE 1   
+C51 COMPILER V9.60.7.0   TIME0                                                             02/04/2026 17:40:27 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIME0
 OBJECT MODULE PLACED IN .\Release\Objects\time0.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\time0.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCD
-                    -IR(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\time0.lst) OBJECT(.\Relea
-                    -se\Objects\time0.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\time0.c LARGE OPTIMIZE(9,SIZE) BROWSE INTVECTOR(0X000C) INCDI
+                    -R(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\time0.lst) OBJECT(.\Releas
+                    -e\Objects\time0.obj)
 
 line level    source
 
@@ -13,7 +13,7 @@ line level    source
    2          #include "power_on.h"
    3          
    4          /**
-   5           * @brief 配置定时器TMR0，定时器默认关闭
+   5           * @brief 配置定时器TMR0 
    6           */
    7          void tmr0_config(void)
    8          {
@@ -62,7 +62,7 @@ line level    source
   49          
   50          // extern void fun(void);
   51          // 定时器TMR0中断服务函数
-C51 COMPILER V9.60.7.0   TIME0                                                             01/30/2026 16:24:12 PAGE 2   
+C51 COMPILER V9.60.7.0   TIME0                                                             02/04/2026 17:40:27 PAGE 2   
 
   52          void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
   53          {

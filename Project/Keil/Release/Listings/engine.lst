@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   ENGINE                                                            01/30/2026 16:24:13 PAGE 1   
+C51 COMPILER V9.60.7.0   ENGINE                                                            02/04/2026 18:02:23 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ENGINE
 OBJECT MODULE PLACED IN .\Release\Objects\engine.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\engine.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INC
-                    -DIR(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\engine.lst) OBJECT(.\Rel
-                    -ease\Objects\engine.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\engine.c LARGE OPTIMIZE(9,SIZE) BROWSE INTVECTOR(0X000C) INCD
+                    -IR(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\engine.lst) OBJECT(.\Rele
+                    -ase\Objects\engine.obj)
 
 line level    source
 
@@ -52,192 +52,199 @@ line level    source
   38   1          volatile u32 adc_pin_9_avg = 0;             // 存放平均值
   39   1          volatile u16 adc_val = adc_val_from_engine; // adc_val_from_engine 由adc中断更新
   40   1      
-  41   1          if (filter_buff[0] == 0xFFFF) // 如果是第一次检测，让数组内所有元素都变为第一次
-             -采集的数据，方便快速作出变化
+  41   1          if (adc_val == U16_MAX_VAL)
   42   1          {
-  43   2              u16 i = 0;
-  44   2              for (; i < ARRAY_SIZE(filter_buff); i++)
-  45   2              {
-  46   3                  filter_buff[i] = adc_val;
-  47   3              }
-  48   2      
-  49   2              for (i = 0; i < ARRAY_SIZE(filter_buff_2); i++)
-C51 COMPILER V9.60.7.0   ENGINE                                                            01/30/2026 16:24:13 PAGE 2   
+  43   2              // 未采集到数据，直接返回
+  44   2              // printf("adc engine not ready\n");
+  45   2              return;
+  46   2          }
+  47   1      
+  48   1          if (filter_buff[0] == 0xFFFF) // 如果是第一次检测，让数组内所有元素都变为第一次
+             -采集的数据，方便快速作出变化
+  49   1          {
+C51 COMPILER V9.60.7.0   ENGINE                                                            02/04/2026 18:02:23 PAGE 2   
 
-  50   2              {
-  51   3                  filter_buff_2[i] = adc_val;
-  52   3              }
-  53   2          }
-  54   1          else
-  55   1          {
-  56   2              u16 temp = filter_buff[filter_buff_index];
-  57   2              temp += adc_val;
-  58   2              temp >>= 1;
-  59   2              filter_buff[filter_buff_index] = temp;
-  60   2              filter_buff_index++;
-  61   2              if (filter_buff_index >= ARRAY_SIZE(filter_buff))
-  62   2              {
-  63   3                  filter_buff_index = 0;
-  64   3              }
-  65   2          }
-  66   1      
-  67   1          { // 取出数组内的数据，计算平均值
-  68   2              u16 i = 0;
-  69   2              for (; i < ARRAY_SIZE(filter_buff); i++)
-  70   2              {
-  71   3                  adc_pin_9_avg += filter_buff[i];
-  72   3              }
-  73   2      
-  74   2              // adc_pin_9_avg /= ARRAY_SIZE(filter_buff);
-  75   2              adc_pin_9_avg >>= 5; // 相当于 /= 32
-  76   2          } // 取出数组内的数据，计算平均值
-  77   1      
-  78   1          // 在前面滤波的基础上再进行一次滤波
-  79   1          filter_buff_2[filter_buff_2_index] = adc_pin_9_avg;
-  80   1          filter_buff_2_index++;
-  81   1          if (filter_buff_2_index >= ARRAY_SIZE(filter_buff_2))
-  82   1          {
-  83   2              filter_buff_2_index = 0;
-  84   2          }
-  85   1      
-  86   1          {
-  87   2              u16 i = 0;
-  88   2              t_adc_max = 0;
-  89   2              t_adc_min = 4096;
-  90   2              for (; i < ARRAY_SIZE(filter_buff_2); i++)
-  91   2              {
-  92   3                  if (filter_buff_2[i] > t_adc_max)
-  93   3                  {
-  94   4                      t_adc_max = filter_buff_2[i];
-  95   4                  }
-  96   3                  if (filter_buff_2[i] < t_adc_min)
-  97   3                  {
-  98   4                      t_adc_min = filter_buff_2[i];
-  99   4                  }
- 100   3                  if ((t_adc_max - t_adc_min) > ADC_OVER_DRIVE_VAL)
- 101   3                  { // 电压波动
- 102   4                      over_drive_status = OVER_DRIVE_RESTART_TIME;
- 103   4                  }
- 104   3                  else
- 105   3                  {
- 106   4                      if (over_drive_status)
- 107   4                          over_drive_status--;
- 108   4                  }
- 109   3              }
- 110   2      
- 111   2              // MY_DEBUG:
-C51 COMPILER V9.60.7.0   ENGINE                                                            01/30/2026 16:24:13 PAGE 3   
+  50   2              u16 i = 0;
+  51   2              for (; i < ARRAY_SIZE(filter_buff); i++)
+  52   2              {
+  53   3                  filter_buff[i] = adc_val;
+  54   3              }
+  55   2      
+  56   2              for (i = 0; i < ARRAY_SIZE(filter_buff_2); i++)
+  57   2              {
+  58   3                  filter_buff_2[i] = adc_val;
+  59   3              }
+  60   2          }
+  61   1          else
+  62   1          {
+  63   2              u16 temp = filter_buff[filter_buff_index];
+  64   2              temp += adc_val;
+  65   2              temp >>= 1;
+  66   2              filter_buff[filter_buff_index] = temp;
+  67   2              filter_buff_index++;
+  68   2              if (filter_buff_index >= ARRAY_SIZE(filter_buff))
+  69   2              {
+  70   3                  filter_buff_index = 0;
+  71   3              }
+  72   2          }
+  73   1      
+  74   1          { // 取出数组内的数据，计算平均值
+  75   2              u16 i = 0;
+  76   2              for (; i < ARRAY_SIZE(filter_buff); i++)
+  77   2              {
+  78   3                  adc_pin_9_avg += filter_buff[i];
+  79   3              }
+  80   2      
+  81   2              // adc_pin_9_avg /= ARRAY_SIZE(filter_buff);
+  82   2              adc_pin_9_avg >>= 5; // 相当于 /= 32
+  83   2          } // 取出数组内的数据，计算平均值
+  84   1      
+  85   1          // 在前面滤波的基础上再进行一次滤波
+  86   1          filter_buff_2[filter_buff_2_index] = adc_pin_9_avg;
+  87   1          filter_buff_2_index++;
+  88   1          if (filter_buff_2_index >= ARRAY_SIZE(filter_buff_2))
+  89   1          {
+  90   2              filter_buff_2_index = 0;
+  91   2          }
+  92   1      
+  93   1          {
+  94   2              u16 i = 0;
+  95   2              t_adc_max = 0;
+  96   2              t_adc_min = 4096;
+  97   2              for (; i < ARRAY_SIZE(filter_buff_2); i++)
+  98   2              {
+  99   3                  if (filter_buff_2[i] > t_adc_max)
+ 100   3                  {
+ 101   4                      t_adc_max = filter_buff_2[i];
+ 102   4                  }
+ 103   3                  if (filter_buff_2[i] < t_adc_min)
+ 104   3                  {
+ 105   4                      t_adc_min = filter_buff_2[i];
+ 106   4                  }
+ 107   3                  if ((t_adc_max - t_adc_min) > ADC_OVER_DRIVE_VAL)
+ 108   3                  { // 电压波动
+ 109   4                      over_drive_status = OVER_DRIVE_RESTART_TIME;
+ 110   4                  }
+ 111   3                  else
+C51 COMPILER V9.60.7.0   ENGINE                                                            02/04/2026 18:02:23 PAGE 3   
 
- 112   2              // {
- 113   2              //     // 根据发动机不稳定降功率的功能正常时，测得是5.83ms执行一次，每1
+ 112   3                  {
+ 113   4                      if (over_drive_status)
+ 114   4                          over_drive_status--;
+ 115   4                  }
+ 116   3              }
+ 117   2      
+ 118   2              // MY_DEBUG:
+ 119   2              // {
+ 120   2              //     // 根据发动机不稳定降功率的功能正常时，测得是5.83ms执行一次，每1
              -00次打印一次，平均耗时是583ms
- 114   2              //     // 如果循环大于5.83ms，在客户那里测试好像功能也正常，客户没有进�
+ 121   2              //     // 如果循环大于5.83ms，在客户那里测试好像功能也正常，客户没有进�
              -��步反馈
- 115   2              //     static u8 cnt = 0;
- 116   2              //     cnt++;
- 117   2              //     if (cnt >= 100)
- 118   2              //     {
- 119   2              //         cnt = 0;
- 120   2              //         printf("__LINE__ %u\n", __LINE__);
- 121   2              //     }
- 122   2              // }
- 123   2          }
- 124   1      
- 125   1          if (adc_pin_9_avg >= (ADC_VAL_170VAC + ADC_DEAD_ZONE_NEAR_170VAC) ||
- 126   1              (flag_is_add_power && adc_pin_9_avg > (ADC_VAL_170VAC + ADC_DEAD_ZONE_NEAR_170VAC))) // 大于 170
+ 122   2              //     static u8 cnt = 0;
+ 123   2              //     cnt++;
+ 124   2              //     if (cnt >= 100)
+ 125   2              //     {
+ 126   2              //         cnt = 0;
+ 127   2              //         printf("__LINE__ %u\n", __LINE__);
+ 128   2              //     }
+ 129   2              // }
+ 130   2          }
+ 131   1      
+ 132   1          if (adc_pin_9_avg >= (ADC_VAL_170VAC + ADC_DEAD_ZONE_NEAR_170VAC) ||
+ 133   1              (flag_is_add_power && adc_pin_9_avg > (ADC_VAL_170VAC + ADC_DEAD_ZONE_NEAR_170VAC))) // 大于 170
              -VAC
- 127   1          {
- 128   2              // 大于170VAC，恢复100%占空比，但是优先级比 "9脚电压检测到发送机功率不�
+ 134   1          {
+ 135   2              // 大于170VAC，恢复100%占空比，但是优先级比 "9脚电压检测到发送机功率不�
              -��定，进而降功率" 低
- 129   2              flag_is_sub_power = 0;
- 130   2              flag_is_sub_power2 = 0;
- 131   2              flag_is_add_power = 1;
- 132   2      
- 133   2              if (over_drive_status == OVER_DRIVE_RESTART_TIME) // 9脚电压超过不稳定阈值对应的电�
+ 136   2              flag_is_sub_power = 0;
+ 137   2              flag_is_sub_power2 = 0;
+ 138   2              flag_is_add_power = 1;
+ 139   2      
+ 140   2              if (over_drive_status == OVER_DRIVE_RESTART_TIME) // 9脚电压超过不稳定阈值对应的电�
              -�
- 134   2              {
- 135   3                  over_drive_status -= 1;
- 136   3                  if (limited_pwm_duty_due_to_unstable_engine > PWM_DUTY_50_PERCENT)
- 137   3                  {
- 138   4                      limited_pwm_duty_due_to_unstable_engine -= 1;
- 139   4                  }
- 140   3      
- 141   3                  if (limited_pwm_duty_due_to_unstable_engine < PWM_DUTY_50_PERCENT)
- 142   3                  {
- 143   4                      limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_50_PERCENT;
- 144   4                  }
- 145   3              }
- 146   2              else if (over_drive_status == 0)
- 147   2              {
- 148   3                  // 未满载 pwm++
- 149   3                  if (flag_is_pwm_add_time_comes) // pwm占空比递增时间到来
- 150   3                  {
- 151   4                      flag_is_pwm_add_time_comes = 0;
- 152   4                      if (limited_pwm_duty_due_to_unstable_engine < PWM_DUTY_100_PERCENT)
- 153   4                      {
- 154   5                          limited_pwm_duty_due_to_unstable_engine++;
- 155   5                      }
- 156   4                  }
- 157   3              }
- 158   2          }
- 159   1          else if (adc_pin_9_avg > (ADC_VAL_LOWER_THAN_170VAC) &&
- 160   1                   (adc_pin_9_avg <= (ADC_VAL_170VAC) || flag_is_sub_power == 4)) // 小于 170VAC
- 161   1          {
- 162   2              // 锁定最大的占空比为50%，并且给相应标志位置一
- 163   2              if (flag_is_pwm_sub_time_comes) // pwm占空比递减时间到来
- 164   2              {
- 165   3                  flag_is_pwm_sub_time_comes = 0;
- 166   3      
- 167   3                  if (flag_is_sub_power < 4)
- 168   3                  {
-C51 COMPILER V9.60.7.0   ENGINE                                                            01/30/2026 16:24:13 PAGE 4   
+ 141   2              {
+ 142   3                  over_drive_status -= 1;
+ 143   3                  if (limited_pwm_duty_due_to_unstable_engine > PWM_DUTY_50_PERCENT)
+ 144   3                  {
+ 145   4                      limited_pwm_duty_due_to_unstable_engine -= 1;
+ 146   4                  }
+ 147   3      
+ 148   3                  if (limited_pwm_duty_due_to_unstable_engine < PWM_DUTY_50_PERCENT)
+ 149   3                  {
+ 150   4                      limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_50_PERCENT;
+ 151   4                  }
+ 152   3              }
+ 153   2              else if (over_drive_status == 0)
+ 154   2              {
+ 155   3                  // 未满载 pwm++
+ 156   3                  if (flag_is_pwm_add_time_comes) // pwm占空比递增时间到来
+ 157   3                  {
+ 158   4                      flag_is_pwm_add_time_comes = 0;
+ 159   4                      if (limited_pwm_duty_due_to_unstable_engine < PWM_DUTY_100_PERCENT)
+ 160   4                      {
+ 161   5                          limited_pwm_duty_due_to_unstable_engine++;
+ 162   5                      }
+ 163   4                  }
+ 164   3              }
+ 165   2          }
+ 166   1          else if (adc_pin_9_avg > (ADC_VAL_LOWER_THAN_170VAC) &&
+ 167   1                   (adc_pin_9_avg <= (ADC_VAL_170VAC) || flag_is_sub_power == 4)) // 小于 170VAC
+ 168   1          {
+C51 COMPILER V9.60.7.0   ENGINE                                                            02/04/2026 18:02:23 PAGE 4   
 
- 169   4                      flag_is_sub_power++;
- 170   4                  }
- 171   3      
- 172   3                  flag_is_sub_power2 = 0;
- 173   3                  flag_is_add_power = 0;
- 174   3      
- 175   3                  if (limited_pwm_duty_due_to_unstable_engine > PWM_DUTY_50_PERCENT)
- 176   3                  {
- 177   4                      limited_pwm_duty_due_to_unstable_engine -= 2;
- 178   4                  }
- 179   3                  else if (limited_pwm_duty_due_to_unstable_engine < PWM_DUTY_50_PERCENT)
- 180   3                  {
- 181   4                      limited_pwm_duty_due_to_unstable_engine++;
- 182   4                  }
- 183   3                  else
- 184   3                  {
- 185   4                      limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_50_PERCENT;
- 186   4                  }
- 187   3              }
- 188   2          }
- 189   1          else if (adc_pin_9_avg <= (ADC_VAL_LOWER_THAN_170VAC) || (flag_is_sub_power2)) // 小于 170VAC
- 190   1          {
- 191   2              // 锁定最大的占空比为50%，并且给相应标志位置一
- 192   2              if (flag_is_pwm_sub_time_comes) // pwm占空比递减时间到来
- 193   2              {
- 194   3                  flag_is_pwm_sub_time_comes = 0;
- 195   3      
- 196   3                  flag_is_sub_power2 = 1;
- 197   3                  flag_is_sub_power = 0;
- 198   3                  flag_is_add_power = 0;
- 199   3      
- 200   3                  if (limited_pwm_duty_due_to_unstable_engine > PWM_DUTY_30_PERCENT)
- 201   3                  {
- 202   4                      limited_pwm_duty_due_to_unstable_engine -= 2;
- 203   4                  }
- 204   3                  else
- 205   3                  {
- 206   4                      limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_30_PERCENT;
- 207   4                  }
- 208   3              }
- 209   2          }
- 210   1      }
+ 169   2              // 锁定最大的占空比为50%，并且给相应标志位置一
+ 170   2              if (flag_is_pwm_sub_time_comes) // pwm占空比递减时间到来
+ 171   2              {
+ 172   3                  flag_is_pwm_sub_time_comes = 0;
+ 173   3      
+ 174   3                  if (flag_is_sub_power < 4)
+ 175   3                  {
+ 176   4                      flag_is_sub_power++;
+ 177   4                  }
+ 178   3      
+ 179   3                  flag_is_sub_power2 = 0;
+ 180   3                  flag_is_add_power = 0;
+ 181   3      
+ 182   3                  if (limited_pwm_duty_due_to_unstable_engine > PWM_DUTY_50_PERCENT)
+ 183   3                  {
+ 184   4                      limited_pwm_duty_due_to_unstable_engine -= 2;
+ 185   4                  }
+ 186   3                  else if (limited_pwm_duty_due_to_unstable_engine < PWM_DUTY_50_PERCENT)
+ 187   3                  {
+ 188   4                      limited_pwm_duty_due_to_unstable_engine++;
+ 189   4                  }
+ 190   3                  else
+ 191   3                  {
+ 192   4                      limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_50_PERCENT;
+ 193   4                  }
+ 194   3              }
+ 195   2          }
+ 196   1          else if (adc_pin_9_avg <= (ADC_VAL_LOWER_THAN_170VAC) || (flag_is_sub_power2)) // 小于 170VAC
+ 197   1          {
+ 198   2              // 锁定最大的占空比为50%，并且给相应标志位置一
+ 199   2              if (flag_is_pwm_sub_time_comes) // pwm占空比递减时间到来
+ 200   2              {
+ 201   3                  flag_is_pwm_sub_time_comes = 0;
+ 202   3      
+ 203   3                  flag_is_sub_power2 = 1;
+ 204   3                  flag_is_sub_power = 0;
+ 205   3                  flag_is_add_power = 0;
+ 206   3      
+ 207   3                  if (limited_pwm_duty_due_to_unstable_engine > PWM_DUTY_30_PERCENT)
+ 208   3                  {
+ 209   4                      limited_pwm_duty_due_to_unstable_engine -= 2;
+ 210   4                  }
+ 211   3                  else
+ 212   3                  {
+ 213   4                      limited_pwm_duty_due_to_unstable_engine = PWM_DUTY_30_PERCENT;
+ 214   4                  }
+ 215   3              }
+ 216   2          }
+ 217   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1109    ----
+   CODE SIZE        =    852    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =    616       8
    PDATA SIZE       =   ----    ----

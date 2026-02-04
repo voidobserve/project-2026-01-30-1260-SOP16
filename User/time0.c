@@ -2,7 +2,7 @@
 #include "power_on.h"
 
 /**
- * @brief 配置定时器TMR0，定时器默认关闭
+ * @brief 配置定时器TMR0 
  */
 void tmr0_config(void)
 {

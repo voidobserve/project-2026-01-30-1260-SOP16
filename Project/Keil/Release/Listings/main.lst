@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              01/30/2026 16:24:12 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/04/2026 17:57:09 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN .\Release\Objects\main.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCDI
-                    -R(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\main.lst) OBJECT(.\Release
-                    -\Objects\main.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\main.c LARGE OPTIMIZE(9,SIZE) BROWSE INTVECTOR(0X000C) INCDIR
+                    -(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\main.lst) OBJECT(.\Release\
+                    -Objects\main.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   51          
   52          void main(void)
   53          {
-C51 COMPILER V9.60.7.0   MAIN                                                              01/30/2026 16:24:12 PAGE 2   
+C51 COMPILER V9.60.7.0   MAIN                                                              02/04/2026 17:57:09 PAGE 2   
 
   54   1          // 看门狗默认打开, 复位时间2s
   55   1          WDT_KEY = WDT_KEY_VAL(0xDD); //  关闭看门狗 (如需配置看门狗请查看“WDT\WDT_Reset”示
@@ -86,8 +86,8 @@ line level    source
   71   1          adc_pin_config(); // 配置使用到adc的引脚
   72   1          adc_config();
   73   1      
-  74   1          tmr0_config();    // 配置定时器
-  75   1          pwm_init();       // 配置pwm输出的引脚
+  74   1          tmr0_config(); // 配置定时器
+  75   1          pwm_init();    // 配置pwm输出的引脚
   76   1          tmr1_config();
   77   1      
   78   1          timer2_config();
@@ -103,31 +103,33 @@ line level    source
   88   1      
   89   1          while (1)
   90   1          {
-  91   2              update_max_pwm_duty_coefficient();
-  92   2              temperature_scan(); // 检测热敏电阻一端的电压值
-  93   2              set_duty();         // 设定到要调节到的脉宽
-  94   2      
-  95   2              // 如果 expect_adjust_pwm_channel_x_duty 有变化，可以在这里修改 adjust_pwm_channel_x_
+  91   2      #if 1
+  92   2              update_max_pwm_duty_coefficient();
+  93   2              temperature_scan(); // 检测热敏电阻一端的电压值
+  94   2              set_duty();         // 设定到要调节到的脉宽
+  95   2      
+  96   2              // 如果 expect_adjust_pwm_channel_x_duty 有变化，可以在这里修改 adjust_pwm_channel_x_
              -duty
-  96   2              adjust_pwm_channel_0_duty = get_pwm_channel_x_adjust_duty(expect_adjust_pwm_channel_0_duty);
-  97   2          }
-  98   1      }
-  99          
- 100          /**
- 101           * @}
- 102           */
- 103          
- 104          /*************************** (C) COPYRIGHT 2022 HUGE-IC ***** END OF FILE *****/
+  97   2              adjust_pwm_channel_0_duty = get_pwm_channel_x_adjust_duty(expect_adjust_pwm_channel_0_duty);
+  98   2      #endif
+  99   2          }
+ 100   1      }
+ 101          
+ 102          /**
+ 103           * @}
+ 104           */
+ 105          
+ 106          /*************************** (C) COPYRIGHT 2022 HUGE-IC ***** END OF FILE *****/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    137    ----
    CONSTANT SIZE    =     11    ----
    XDATA SIZE       =   ----    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              02/04/2026 17:57:09 PAGE 3   
+
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
-C51 COMPILER V9.60.7.0   MAIN                                                              01/30/2026 16:24:12 PAGE 3   
-
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

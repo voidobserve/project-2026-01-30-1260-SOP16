@@ -71,8 +71,8 @@ void main(void)
     adc_pin_config(); // 配置使用到adc的引脚
     adc_config();
 
-    tmr0_config();    // 配置定时器
-    pwm_init();       // 配置pwm输出的引脚
+    tmr0_config(); // 配置定时器
+    pwm_init();    // 配置pwm输出的引脚
     tmr1_config();
 
     timer2_config();
@@ -88,12 +88,14 @@ void main(void)
 
     while (1)
     {
+#if 1
         update_max_pwm_duty_coefficient();
         temperature_scan(); // 检测热敏电阻一端的电压值
         set_duty();         // 设定到要调节到的脉宽
 
         // 如果 expect_adjust_pwm_channel_x_duty 有变化，可以在这里修改 adjust_pwm_channel_x_duty
         adjust_pwm_channel_0_duty = get_pwm_channel_x_adjust_duty(expect_adjust_pwm_channel_0_duty);
+#endif
     }
 }
 

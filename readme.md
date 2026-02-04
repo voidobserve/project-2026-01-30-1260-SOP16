@@ -18,7 +18,7 @@
 
 要想修改pwm占空比的值，应该先修改 expect_adjust_pwm_channel_x_duty ，
 再调用 get_pwm_channel_x_adjust_duty() 更新 adjust_pwm_channel_x_duty
-最后让定时器自行调节，实现缓慢变化的效果
+最后让定时器自行调节，实现pwm占空比缓慢变化的效果
 
 ---
 
@@ -40,7 +40,7 @@
 13 -- VCC
 14 -- P16 一路PWM输出，控制一路灯光（客户说的PWM1）
 15 --  
-16 -- P14 目前固定输出低电平
+16 -- P14 目前固定输出低电平 （可以在测试时输出高低电平，观察程序执行步骤）
 
 demo板上面的引脚
 

@@ -38,6 +38,13 @@ void according_pin9_to_adjust_pwm(void)
     volatile u32 adc_pin_9_avg = 0;             // 存放平均值
     volatile u16 adc_val = adc_val_from_engine; // adc_val_from_engine 由adc中断更新
 
+    if (adc_val == U16_MAX_VAL)
+    {
+        // 未采集到数据，直接返回
+        // printf("adc engine not ready\n");
+        return;
+    }
+
     if (filter_buff[0] == 0xFFFF) // 如果是第一次检测，让数组内所有元素都变为第一次采集的数据，方便快速作出变化
     {
         u16 i = 0;

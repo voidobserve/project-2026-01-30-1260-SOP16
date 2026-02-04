@@ -6,6 +6,7 @@ volatile bit flag_is_in_power_on = 0; // 是否处于开机缓启动
 static volatile u32 power_on_step = 0;
 volatile bit flag_time_comes_during_power_on = 0; // 标志位，开机缓启动期间，调节时间到来（由定时器置位）
 
+// 控制开机缓启动
 void power_on_handle(void)
 {
     cur_pwm_channel_0_duty = 0;

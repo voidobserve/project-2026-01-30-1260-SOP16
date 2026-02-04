@@ -1,11 +1,11 @@
-C51 COMPILER V9.60.7.0   PWM                                                               01/30/2026 17:54:09 PAGE 1   
+C51 COMPILER V9.60.7.0   PWM                                                               02/04/2026 17:40:27 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PWM
 OBJECT MODULE PLACED IN .\Release\Objects\pwm.obj
-COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\pwm.c LARGE OPTIMIZE(8,SPEED) BROWSE INTVECTOR(0X000C) INCDIR
-                    -(..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\pwm.lst) OBJECT(.\Release\O
-                    -bjects\pwm.obj)
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\..\User\pwm.c LARGE OPTIMIZE(9,SIZE) BROWSE INTVECTOR(0X000C) INCDIR(
+                    -..\..\Libraries\Include;..\..\User) INTERVAL(3) DEBUG OBJECTEXTEND PRINT(.\Release\Listings\pwm.lst) OBJECT(.\Release\Ob
+                    -jects\pwm.obj)
 
 line level    source
 
@@ -20,9 +20,9 @@ line level    source
    8          
    9          volatile bit flag_is_time_to_limit_pwm = 0; // 标志位，是否到了限制占空比的定时时间（�
              -�定时器置位，置位之后不清零）
-  10            
-  11          volatile u16 cur_pwm_channel_0_duty = 0;                          // 当前设置的、 pwm_channle_0 的�
-             -��空比（只有遥控器指定要修改它的值或是定时器缓慢调节，才会被修改）
+  10          
+  11          volatile u16 cur_pwm_channel_0_duty = 0;                              // 当前设置的、 pwm_channle_0 
+             -的占空比（只有遥控器指定要修改它的值或是定时器缓慢调节，才会被修改）
   12          volatile u16 expect_adjust_pwm_channel_0_duty = PWM_DUTY_100_PERCENT; // 存放期望调节到的 pwm_chan
              -nle_0 占空比
   13          volatile u16 adjust_pwm_channel_0_duty = PWM_DUTY_100_PERCENT;        // pwm_channle_0 要调整到的占�
@@ -62,7 +62,7 @@ line level    source
   45           * @brief 获取第一路PWM的运行状态
   46           *
   47           * @return u8 0--pwm关闭，1--pwm开启
-C51 COMPILER V9.60.7.0   PWM                                                               01/30/2026 17:54:09 PAGE 2   
+C51 COMPILER V9.60.7.0   PWM                                                               02/04/2026 17:40:27 PAGE 2   
 
   48           */
   49          u8 get_pwm_channel_0_status(void)
@@ -126,7 +126,7 @@ line level    source
  105   1          tmp_pwm_duty = ((u32)pwm_adjust_duty * limited_max_pwm_duty / PWM_DUTY_100_PERCENT) * limited_pwm_duty
              -_due_to_schedule / PWM_DUTY_100_PERCENT; // pwm_adjust_duty * 旋钮限制的占空比系数
  106   1      
-C51 COMPILER V9.60.7.0   PWM                                                               01/30/2026 17:54:09 PAGE 3   
+C51 COMPILER V9.60.7.0   PWM                                                               02/04/2026 17:40:27 PAGE 3   
 
  107   1          // 温度、发动机异常功率不稳定、风扇异常，都是强制限定占空比
  108   1          // 判断经过旋钮限制之后的占空比 会不会 大于 温度过热之后限制的占空比
@@ -147,7 +147,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    254    ----
+   CODE SIZE        =    250    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     10       2
    PDATA SIZE       =   ----    ----
