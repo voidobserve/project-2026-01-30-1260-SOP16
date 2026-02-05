@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   TIME0                                                             02/05/2026 14:54:58 PAGE 1   
+C51 COMPILER V9.60.7.0   TIME0                                                             02/05/2026 14:58:18 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE TIME0
@@ -62,7 +62,7 @@ line level    source
   49          
   50          // extern void fun(void);
   51          // 定时器TMR0中断服务函数
-C51 COMPILER V9.60.7.0   TIME0                                                             02/05/2026 14:54:58 PAGE 2   
+C51 COMPILER V9.60.7.0   TIME0                                                             02/05/2026 14:58:18 PAGE 2   
 
   52          void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
   53          {

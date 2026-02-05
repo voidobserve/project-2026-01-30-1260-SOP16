@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:54:57 PAGE 1   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:58:18 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE ADC
@@ -62,7 +62,7 @@ line level    source
   49   2                          ADC_BIAS_EN(0x1) |                           // 打开ADC偏置电流能使信号
   50   2                          ADC_BIAS_SEL(0x1);                           // 偏置电流：1x
   51   2              ADC_CHS0 = ADC_ANALOG_CHAN(0x17) |                       // 选则引脚对应的通道（0x17--P2
-C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:54:57 PAGE 2   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:58:18 PAGE 2   
 
              -7）
   52   2                         ADC_EXT_SEL(0x0);                             // 选择外部通道
@@ -126,7 +126,7 @@ line level    source
  101   2              return;
  102   2          }
  103   1      
-C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:54:57 PAGE 3   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:58:18 PAGE 3   
 
  104   1          voltage = get_voltage_from_pin(); // 采集热敏电阻上的电压
  105   1          if (voltage >= (u32)U16_MAX_VAL * 12 / 10)
@@ -190,7 +190,7 @@ line level    source
  159   4                  }
  160   3                  else
  161   3                  {
-C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:54:57 PAGE 4   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:58:18 PAGE 4   
 
  162   4                      cnt = 0;
  163   4                  }
@@ -254,7 +254,7 @@ line level    source
  219   3      
  220   3                  static u8 i = 0; // adc采集次数的计数
  221   3                  static volatile u32 g_tmpbuff = 0;
-C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:54:57 PAGE 5   
+C51 COMPILER V9.60.7.0   ADC                                                               02/05/2026 14:58:18 PAGE 5   
 
  222   3                  static volatile u16 g_adcmax = 0;
  223   3                  static volatile u16 g_adcmin = 0xFFFF;
