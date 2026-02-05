@@ -14,7 +14,7 @@
 
 // 是否使用打印调试
 // 使用 P00 作为 串口打印输出 （实际用到的芯片的第4脚）
-#define USE_MY_DEBUG 1
+#define USE_MY_DEBUG 0
 
 #if USE_MY_DEBUG
 #include <stdio.h>

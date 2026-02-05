@@ -188,10 +188,8 @@ void set_duty(void)
     {
         if (flag_is_time_to_check_engine)
         {
-            flag_is_time_to_check_engine = 0;
-            P14 = 1;
-            according_pin9_to_adjust_pwm();
-            P14 = 0;
+            flag_is_time_to_check_engine = 0; 
+            according_pin9_to_adjust_pwm(); 
         }
     }
     else if (TEMP_75 == temp_status)

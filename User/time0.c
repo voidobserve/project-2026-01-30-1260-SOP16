@@ -62,6 +62,23 @@ void TIMR0_IRQHandler(void) interrupt TMR0_IRQn
         TMR0_CONH |= TMR_PRD_PND(0x1); // 清除pending
 
         flag_time_comes_during_power_on = 1; // 开机缓启动期间，控制每次调节PWM占空比的时间
+
+            { // 用于上电多久之后，限制PWM最大的占空比
+            static u32 cnt = 0;
+            if (0 == flag_is_time_to_limit_pwm)
+            {
+                /*
+                    如果没有到到限制占空比的时间（标志位不为1）
+                    则进行计时
+                */
+                cnt++;
+                if (cnt >= SCHEDULE_TIME_TO_LIMIT_PWM)
+                {
+                    cnt = 0;
+                    flag_is_time_to_limit_pwm = 1;
+                }
+            }
+        }
     }
 
     // 退出中断设置IP，不可删除

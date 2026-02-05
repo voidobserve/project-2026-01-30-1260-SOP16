@@ -6,8 +6,9 @@
 
 // 周期值 == 系统时钟 / 预分频 / pwm频率，：
 // 旧版和做过货的版本，这里的值都是6000，之后的修改要尽量保持在6000，否则会对调节有影响
-// #define STMR_ALL_PERIOD_VAL (SYSCLK / 1 / 8000) //
-#define STMR_ALL_PERIOD_VAL (SYSCLK / 1 / 32000) //
+#define STMR_ALL_PERIOD_VAL (SYSCLK / 1 / 8000) //
+// #define STMR_ALL_PERIOD_VAL (SYSCLK / 1 / 24000) //
+// #define STMR_ALL_PERIOD_VAL (SYSCLK / 1 / 32000) //
 #define STMR0_PEROID_VAL (STMR_ALL_PERIOD_VAL)
 #define STMR1_PEROID_VAL (STMR_ALL_PERIOD_VAL)
 
@@ -24,8 +25,8 @@ enum
 };
 
 // 定时，限制占空比的时间（用于上电多久之后，限制最大的占空比），单位：ms
-// #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)1 * 60 * 60 * 1000)
-#define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 1000) // USER_TO_DO 测试时使用
+#define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)1 * 60 * 60 * 1000)
+// #define SCHEDULE_TIME_TO_LIMIT_PWM ((u32)30 * 1000) // USER_TO_DO 测试时使用
 // 时间到来之后，要限制的最大占空比值
 #define SCHEDULE_TIME_TO_LIMIT_PWM_VAL ((u16)PWM_DUTY_80_PERCENT)
 
